@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="utf-8">
   <title>Users &laquo; Admin</title>
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="../assets/css/admin.css">
   <script src="../assets/vendors/nprogress/nprogress.js"></script>
 </head>
+
 <body>
   <script>NProgress.start()</script>
 
@@ -29,45 +31,46 @@
         <strong>错误！</strong>发生XXX错误
       </div> -->
       <div class="row">
-        <div class="col-md-4">
-          <form>
+        <div class="col-md-4" id="userBox">
+          <form id="userAdd">
             <h2>添加新用户</h2>
             <div class="form-group">
               <label>头像</label>
               <div class="form-group">
                 <label class="form-image">
                   <input id="avatar" type="file">
-                  <img src="../assets/img/default.png">
+                  <img src="../assets/img/default.png" id="avatarImg">
                   <i class="mask fa fa-upload"></i>
+                  <input type="hidden" id="hiddenAvatar" name="avatar">
                 </label>
               </div>
             </div>
             <div class="form-group">
               <label>邮箱</label>
-              <input class="form-control" type="email" placeholder="请输入邮箱">
+              <input class="form-control" type="email" placeholder="请输入邮箱" name="email">
             </div>
             <div class="form-group">
               <label>昵称</label>
-              <input class="form-control" type="text" placeholder="请输入昵称">
+              <input class="form-control" type="text" placeholder="请输入昵称" name="nickName">
             </div>
             <div class="form-group">
               <label>密码</label>
-              <input class="form-control" type="text" placeholder="请输入密码">
+              <input class="form-control" type="text" placeholder="请输入密码" name="password">
             </div>
             <div class="form-group">
               <div class="radio-inline">
-                <label><input type="radio">未激活</label>
+                <label><input type="radio" name="status" value="0">未激活</label>
               </div>
               <div class="radio-inline">
-                <label><input type="radio">激活</label>
+                <label><input type="radio" name="status" value="1">激活</label>
               </div>
             </div>
             <div class="form-group">
               <div class="radio-inline">
-                <label><input type="radio">超级管理员</label>
+                <label><input type="radio" name="role" value="admin">超级管理员</label>
               </div>
               <div class="radio-inline">
-                <label><input type="radio">普通用户</label>
+                <label><input type="radio" name="role" value="normal">普通用户</label>
               </div>
             </div>
             <div class="form-group">
@@ -82,7 +85,7 @@
           </div>
           <table class="table table-striped table-bordered table-hover">
             <thead>
-               <tr>
+              <tr>
                 <th class="text-center" width="40"><input type="checkbox"></th>
                 <th class="text-center" width="80">头像</th>
                 <th>邮箱</th>
@@ -92,43 +95,8 @@
                 <th class="text-center" width="100">操作</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td class="text-center"><img class="avatar" src="../assets/img/default.png"></td>
-                <td>coder@itcast.cn</td>
-                <td>coder</td>
-                <td>激活</td>
-                <td>普通用户</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td class="text-center"><img class="avatar" src="../assets/img/default.png"></td>
-                <td>coder@itcast.cn</td>
-                <td>coder</td>
-                <td>激活</td>
-                <td>普通用户</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-center"><input type="checkbox"></td>
-                <td class="text-center"><img class="avatar" src="../assets/img/default.png"></td>
-                <td>coder@itcast.cn</td>
-                <td>coder</td>
-                <td>激活</td>
-                <td>普通用户</td>
-                <td class="text-center">
-                  <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                </td>
-              </tr>
+            <tbody id="userBody">
+
             </tbody>
           </table>
         </div>
@@ -173,9 +141,188 @@
     </ul>
   </div>
 
-  <script src="../assets/vendors/jquery/jquery.js"></script>
+  <script src="../assets/vendors/jquery/jquery.min.js"></script>
   <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script src="../assets/js/common.js"></script>
   <script>NProgress.done()</script>
+  <script src="../assets/vendors/art-template/template-web.js"></script>
+  <script type="text/html" id="userTpl">
+   {{each data}}
+   <tr>
+      <td class="text-center"><input type="checkbox"></td>
+      <td class="text-center">
+        {{if $value.avatar}}
+          <img class="avatar" src="{{$value.avatar}}">
+        {{/if}}
+      </td>
+      <td>{{$value.email}}</td>
+      <td>{{$value.nickName}}</td>
+      <td>{{$value.status == '0' ? '未激活' : '激活'}}</td>
+      <td>{{$value.role == 'admin' ? '超级管理员' : '普通用户'}}</td>
+      <td class="text-center">
+        <a href="javascript:;" class="btn btn-default btn-xs edit" data-id="{{$value._id}}">编辑</a>
+        <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+      </td>
+    </tr>
+   {{/each}}
+  </script>
+
+  <script type="text/html" id="modifyTpl">
+    <form id="modifyForm" data-id="{{_id}}">
+      <h2>添加新用户</h2>
+      <div class="form-group">
+        <label>头像</label>
+        <div class="form-group">
+          <label class="form-image">
+            <input id="avatar" type="file">
+            {{if avatar}}
+              <img src="{{avatar}}">
+            {{else}}
+              <img src="../assets/img/default.png" id="avatarImg">
+            {{/if}}
+            <i class="mask fa fa-upload"></i>
+            <input type="hidden" id="hiddenAvatar" name="avatar" value="{{avatar}}">
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>邮箱</label>
+        <input class="form-control" type="email" placeholder="请输入邮箱" name="email" value="{{email}}">
+      </div>
+      <div class="form-group">
+        <label>昵称</label>
+        <input class="form-control" type="text" placeholder="请输入昵称" name="nickName" value="{{nickName}}">
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input class="form-control" type="text" placeholder="请输入密码" name="password" >
+      </div>
+      <div class="form-group">
+        <div class="radio-inline">
+          <label><input type="radio" name="status" value="0" {{status == '0' ? 'checked' : ''}}>未激活</label>
+        </div>
+        <div class="radio-inline">
+          <label><input type="radio" name="status" value="1" {{status == '1' ? 'checked' : ''}}>激活</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="radio-inline">
+          <label><input type="radio" name="role" value="admin" {{role == 'admin' ? 'checked' : ''}}>超级管理员</label>
+        </div>
+        <div class="radio-inline">
+          <label><input type="radio" name="role" value="normal" {{role == 'normal' ? 'checked' : ''}}>普通用户</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary" type="submit">添加</button>
+      </div>
+  </form>
+  </script>
+
+  <script>
+    $(function () {
+      // 添加提交事件
+      $('#userAdd').on('submit', function () {
+        // 获取表单的用户输入的值
+        var formData = $(this).serialize();
+
+        $.ajax({
+          url: '/users',
+          type: 'post',
+          data: formData,
+          success: function (response) {
+            // console.log(response);
+            // 刷新页面
+            location.reload();
+          },
+          error: function () {
+            alert('添加失败');
+          }
+        });
+
+        // 边写边测
+        // console.log(formData);
+        // 阻止默认提交事件
+        return false;
+      });
+
+      // 添加change事件
+      $('#userBox').on('change', '#avatar', function () {
+        // 通过formData获得文件信息  
+        var formData = new FormData();
+        // 使用下标获取具体的图片信息  files[0]
+        formData.append('avatar', this.files[0]);
+
+        // 发送ajax请求
+        $.ajax({
+          url: '/upload',
+          type: 'post',
+          data: formData,
+          // 告诉ajax请求不要解析参数
+          processData: false,
+          // 告诉ajax请求不要设置参数类型 
+          contentType: false,
+          success: function (response) {
+            // console.log(response[0].avatar); 图片的路径
+            // 让图片显示在页面中
+            $('#avatarImg').attr('src', response[0].avatar);
+            // 把路径存储给隐藏域 让数据库得到路径
+            $('#hiddenAvatar').val(response[0].avatar);
+          },
+          error: function () {
+            alert('图片添加失败');
+          }
+        });
+      });
+
+      // 获取用户列表
+      $.ajax({
+        type: 'get',
+        url: '/users',
+        success: function (response) {
+          // console.log(response);
+          var html = template('userTpl', { data: response });
+          $('#userBody').html(html);
+        },
+      });
+
+      // 修改用户信息  点击编辑后 给左边的表单添加要修改的数据
+      $('#userBody').on('click', '.edit', function () {
+        // 获取要修改的id
+        var id = $(this).attr('data-id');
+        // console.log(id);
+        $.ajax({
+          type: 'put',
+          url: `/users/${id}`,
+          success: function (response) {
+            var html = template('modifyTpl', response);
+            // console.log(html);
+            // 渲染页面
+            $('#userBox').html(html);
+          }
+        })
+      });
+
+      // 提交表单把修改后的用户数据添加到页面中
+      $('#userBox').on('submit', '#modifyForm', function () {
+        var formData = $(this).serialize();
+        var id = $(this).attr('data-id');
+        
+        $.ajax({
+          type: 'put',
+          url: `/users/${id}`,
+          data: formData,
+          success: function (response) {
+            // console.log(response);
+            location.reload();
+          }
+        });
+
+        // 阻止默认提交
+        return false;
+      });
+    });
+  </script>
 </body>
+
 </html>
